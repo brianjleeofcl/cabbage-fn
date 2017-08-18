@@ -6,6 +6,8 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 exports.frequency = functions.https.onRequest((req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+
   const dateValues = {
     all: null,
     year: { years: 1 },
