@@ -16,7 +16,7 @@ exports.frequency = functions.https.onRequest((req, res) => {
 
   if (dateValues[date] === undefined) {
     res.status(400)
-    res.send('Invalid paramenter')
+    return res.send('Invalid paramenter')
   }
 
   const targetTime = date === 'all' ? 0 : +moment().subtract(dateValues[date]);
