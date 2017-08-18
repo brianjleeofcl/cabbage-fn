@@ -54,12 +54,14 @@ function transformMap(map, interval, groups) {
     const rangeStart = i * interval + 24;
     const rangeEnd = (i + 1) * interval + 23
     keys.push(`${rangeStart}-${rangeEnd}`);
+
     let sum = 0;
     for (let k = rangeStart; k <= rangeEnd; k++) {
       sum += (map[k] || 0);
       delete map[k];
     }
     values.push(sum);
+    
     lastGroupRangeStart = rangeEnd;
   }
   lastGroupRangeStart += 1;
