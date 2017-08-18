@@ -12,7 +12,9 @@ exports.frequency = functions.https.onRequest((req, res) => {
     month: { months: 1 },
     week: { weeks: 1 }
   }
-  const { date } = req.query
+  const { date } = req.query;
+  const interval = +req.query.interval || 0;
+  const groups = +req.query.groups
 
   if (dateValues[date] === undefined) {
     res.status(400)
@@ -29,6 +31,39 @@ exports.frequency = functions.https.onRequest((req, res) => {
       map[score] = (map[score] || 0) + 1; 
     });
     
-    res.send(map);
+    if (interval === 0) {
+      return res.send(map);
+    } 
+    else if (isNaN(groups)) {
+      res.status(400)
+      return res.send('Invalid parameter');
+    } 
+    else {
+      return res.send(transformMap(map, interval, groups));
+    }
   })
 })
+
+function transformMap(map, interval, groups) {
+  const keys = [];
+  const values = [];
+
+  let lastGroupRangeStart;
+
+  for (let i = 0; i < groups - 1; i++) {
+    const rangeStart = i * interval + 24;
+    const rangeEnd = (i + 1) * interval + 23
+    keys.push(`${rangeStart}-${rangeEnd}`);
+    let sum = 0;
+    for (let k = rangeStart; k <= rangeEnd; k++) {
+      sum += (map[k] || 0);
+      delete map[k];
+    }
+    values.push(sum);
+    lastGroupRangeStart = rangeEnd;
+  }
+  lastGroupRangeStart += 1;
+  keys.push(`${lastGroupRangeStart}+`);
+  values.push(Object.values(map).reduce((sum, num) => sum + num, 0));
+  return { intervals: keys, aggregates: values };
+}
