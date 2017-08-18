@@ -66,6 +66,6 @@ function transformMap(map, interval, groups) {
   }
   lastGroupRangeStart += 1;
   keys.push(`${lastGroupRangeStart}+`);
-  values.push(Object.values(map).reduce((sum, num) => sum + num, 0));
+  values.push(Object.keys(map).reduce((sum, key) => sum + map[key], 0));
   return { intervals: keys, aggregates: values };
 }
